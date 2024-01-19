@@ -1,0 +1,60 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:shoppingapp/conttroler/getitm.dart';
+import 'package:shoppingapp/viwe/pages/auth/loginpage.dart';
+
+import 'package:shoppingapp/viwe/pages/auth/singin.dart';
+import 'package:shoppingapp/splashscreen.dart';
+import 'firebase_options.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<Storitms>(
+        init: Storitms(),
+        builder: (_) => GetMaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Flutter TestApp',
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(
+                    seedColor: const Color.fromARGB(255, 71, 0, 194)),
+                useMaterial3: true,
+              ),
+              home: StreamBuilder(
+                stream: FirebaseAuth.instance.authStateChanges(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Spllash();
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  if(snapshot.hasError){
+                     return const Singin();
+                  }
+                   else {
+                    return const Singin();
+                  }
+                },
+              ),
+              getPages: [
+                GetPage(name: "/", page: () =>  Spllash()),
+                GetPage(name: "/login", page: () =>const  loginpage(imageuser: "",) ),
+                GetPage(name: "/singin", page:()=> const  Singin())
+              ],
+            ));
+  }
+}
